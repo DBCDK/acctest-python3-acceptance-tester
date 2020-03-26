@@ -6,7 +6,7 @@ import unittest
 import os
 from lxml import etree
 import shutil
-import StringIO
+import io
 import tempfile
 from acceptance_tester.framework.rst_creator import TocTree
 import acceptance_tester.framework.rst_creator as rst_creator
@@ -15,7 +15,7 @@ parser = etree.XMLParser( remove_blank_text=True, encoding="UTF-8" )
 
 
 def normalize( xml ):
-    return etree.tostring( etree.parse( StringIO.StringIO( xml ), parser ),
+    return etree.tostring( etree.parse( io.StringIO( xml ), parser ),
                            pretty_print=True, encoding="UTF-8" )
 
 
@@ -146,6 +146,7 @@ class TestRstCreator( unittest.TestCase ):
     def test_create_index_returns_the_expected_rst( self ):
         """ Test whether create_index returns the expected rst string.
         """
+        self.maxDiff=None
         start = datetime.datetime( 2000, 2, 2, 2, 2, 2 )
         delta = datetime.datetime( 2000, 2, 2, 2, 2, 5 ) - start
         result = rst_creator._create_index( view_testdata, 'TEST-TYPE', start, delta )

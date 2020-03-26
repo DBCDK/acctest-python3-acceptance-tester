@@ -13,7 +13,7 @@ from mock import Mock
 from mock import patch
 import zipfile
 from lxml import etree
-import StringIO
+import io
 
 from acceptance_tester.framework.suite_tester import SuiteTester as SuiteTester
 import acceptance_tester.framework.validate_testsuite as validate_testsuite
@@ -181,7 +181,7 @@ def normalize_xml( xml_or_string ):
 
     xml = xml_or_string
     if type( xml_or_string ) == str:
-        xml = etree.parse( StringIO.StringIO( xml_or_string ), parser )
+        xml = etree.parse( io.StringIO( xml_or_string ), parser )
 
     return etree.tostring( xml, pretty_print=True, encoding="UTF-8" )
 
@@ -223,19 +223,19 @@ class TestSuiteTester( unittest.TestCase ):
         """
         arguments = self.arguments
         arguments[6] = 0
-        self.failUnlessRaises( RuntimeError, SuiteTester, *arguments )
+        self.assertRaises( RuntimeError, SuiteTester, *arguments )
 
     def test_suitetester_raises_if_port_range_list_is_bigger_than_2( self ):
         """ Tests whether a runtime error is raised if the port range list is bigger than 2
         """
         arguments = self.arguments
-        self.failUnlessRaises( RuntimeError, SuiteTester, *arguments, port_range="1000-2000-3000" )
+        self.assertRaises( RuntimeError, SuiteTester, *arguments, port_range="1000-2000-3000" )
 
     def test_suitetester_raises_if_1_element_of_port_range_is_bigger_than_the_2_element( self ):
         """ Test whether the suitetest constructor raises if the 1. element of port range is bigger than the 2. element.
         """
         arguments = self.arguments
-        self.failUnlessRaises( RuntimeError, SuiteTester, *arguments, port_range="3000-2000" )
+        self.assertRaises( RuntimeError, SuiteTester, *arguments, port_range="3000-2000" )
 
     def test_suite_tester_raises_if_testrunner_is_not_present( self ):
         """ Test whether a runtime error is raised if testrunner is not present for test type
@@ -243,7 +243,7 @@ class TestSuiteTester( unittest.TestCase ):
 
         acceptance_tester.framework.find_tests._find_testsuites = Mock( return_value=['foo'] )
         acceptance_tester.framework.find_tests._get_test_type = Mock( return_value=( 'unknown-type', {'resource-manager': None } ) )
-        self.failUnlessRaises( RuntimeError, acceptance_tester.framework.suite_tester.SuiteTester, *self.arguments )
+        self.assertRaises( RuntimeError, acceptance_tester.framework.suite_tester.SuiteTester, *self.arguments )
 
     def test_suite_parser_test_suites_are_filtered_according_to_xsd_if_provided( self ):
         """ Test whether the _filter_non_valid_testsuites is called if xsd is provided

@@ -50,6 +50,7 @@ Commandline options
 import datetime
 import os
 import re
+from functools import reduce
 
 
 def parse_stamp( stamp ):
@@ -98,7 +99,7 @@ def create_folder( outputfolder ):
 def write_output_files( values, outputfolder ):
     """ write property files for each entry in the values dict """
     outputfolder = create_folder( outputfolder )
-    for key, value in values.iteritems():
+    for key, value in values.items():
 
         yvalue = reduce( lambda x, y: x + y, value['values'] ) # sum of the values
         if value['method'] == 'avg':
@@ -132,11 +133,11 @@ if __name__ == '__main__':
     ( options, args ) = parser.parse_args()
 
     if len( args ) < 1:
-        print "Need file to parse!"
+        print("Need file to parse!")
         sys.exit( 1 )
 
     if not os.path.exists( args[0] ):
-        print "file '%s' doesn't exist!"%args[0]
+        print("file '%s' doesn't exist!"%args[0])
         sys.exit( 1 )
 
     perform( args[0], options.output_folder )

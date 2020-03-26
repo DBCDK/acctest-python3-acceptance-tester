@@ -18,7 +18,7 @@ index uses the sphinxs directive 'doc', and the created files are
 designed to be part of a sphinx document structure.
 """
 import logging
-import StringIO
+import io
 import os.path
 from lxml import etree
 
@@ -69,7 +69,7 @@ class TocTree( object ):
         current = ""
 
         logger.debug( "rst Parts '%s'"%str( parts ) )
-        for i, part in enumerate( filter( lambda x: x != '', parts ) ):
+        for i, part in enumerate( [x for x in parts if x != ''] ):
 
             current += "/" + part
             logger.debug( "Current %s"%current )
@@ -117,7 +117,7 @@ def _create_rst( test, parser, nsmap ):
     :type nsmap:
         dict.
     """
-    xml = etree.parse( StringIO.StringIO( test['xml'] ), parser )
+    xml = etree.parse( io.StringIO( test['xml'] ), parser )
 
     def _retrieve_text( xpath ):
         result = xml.xpath( xpath, namespaces=nsmap )
@@ -132,8 +132,8 @@ def _create_rst( test, parser, nsmap ):
                'when': _retrieve_text( '/wrapping/ts:test/ts:when' ),
                'then': _retrieve_text( '/wrapping/ts:test/ts:then' )}
 
-    pretty_xml = "\n".join( map( lambda x: "   " + x,
-                                 etree.tostring( xml, pretty_print=True, encoding="UTF-8" ).split( "\n" ) ) )
+
+    pretty_xml = "\n".join( ["   " + x for x in etree.tostring( xml, pretty_print=True, encoding="unicode" ).split( "\n" )] )
 
     rst = [ name, "-" * len( name ), "" ]
 
@@ -147,11 +147,11 @@ def _create_rst( test, parser, nsmap ):
     rst += [ '.. code-block:: xml', "", pretty_xml ]
 
     def convert( string ):
-        if type(string) == unicode:
-            return string.encode( 'utf-8' )
+        #if type(string) == str:
+        #    return string.encode( 'utf-8' )
         return string
 
-    rst = map( convert, rst )
+    rst = list(map( convert, rst ))
 
     return ( name, "\n".join( rst ) )
 
@@ -160,8 +160,8 @@ def _create_treeview( rst, header ):
     """ Creates treeview of test results
     """
     logger.debug( "Creating tree view" )
-    path_prefix = os.path.commonprefix( map( lambda x: x[0], rst.keys() ) )
-    prefix_lst = map( lambda x: ( x[0][len( path_prefix):], x ), rst.keys() )
+    path_prefix = os.path.commonprefix( [x[0] for x in list(rst.keys())] )
+    prefix_lst = [( x[0][len( path_prefix):], x ) for x in list(rst.keys())]
     toc = TocTree( header )
     for entry in prefix_lst:
         mod_entry = "/".join( entry[0].split( "/" )[:-1] ) + "/" + rst[entry[1]][0]
@@ -179,7 +179,7 @@ def _create_flatview( rst, header ):
     flatview += [ "=" * len( header ), "" ]
     flatview += [ ".. toctree::", "   :maxdepth: 2", "" ]
 
-    for key, value in rst.iteritems():
+    for key, value in rst.items():
         flatview += [ "   " + value[0] ]
     flatview += [ "" ]
 
@@ -189,10 +189,10 @@ def _create_flatview( rst, header ):
 def _create_index( rst, type_name, start, delta ):
     """ Creates index page string
     """
-    logger.debug( "Creating index" )
+    logger.debug( "Creating index %s, %s, %s", start, delta, delta_str( delta ) )
     index  = [ "Testrun: %s"%type_name ]
     index += [ "=" * len( index[0] ), "", "**Summary:**", "" ]
-    index += [ "* Number of tests: %s"%len( rst.keys() ) ]
+    index += [ "* Number of tests: %s"%len( list(rst.keys()) ) ]
     index += [ "* Build time: %s"%"%s-%s-%s %s:%s:%s"%(start.year, start.month, start.day,
                                                        start.hour, start.minute, start.second ) ]
     index += [ "* Build duration: %s"%delta_str( delta ), "" ]
@@ -238,7 +238,7 @@ def create_test_documentation( test_results, folder, start_time, delta ):
     if not os.path.exists( folder ):
         os.mkdir( folder )
 
-    for key, value in rst.iteritems():
+    for key, value in rst.items():
         fname = os.path.join( folder, value[0] + '.rst' )
         write_file( fname, value[1] )
 

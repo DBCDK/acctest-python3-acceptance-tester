@@ -60,7 +60,7 @@ import logging
 from lxml import etree
 from nose.tools import nottest
 
-import StringIO
+import io
 
 
 class NullHandler( logging.Handler ):
@@ -95,10 +95,12 @@ def validate_testsuite_file( file ):
 
     xml = None
     try:
-        fh = open( file )
+        fh = open( file, "rb" )
         content = fh.read()
         fh.close()
-        xml = etree.parse( StringIO.StringIO( content ), parser )
+        logger.debug( "Content: %s", content )
+
+        xml = etree.parse( io.BytesIO( content ), parser )
 
     except Exception:
         pass
@@ -117,7 +119,7 @@ def validate_testsuite_file( file ):
         return None
 
     number_of_setup_nodes = 0
-    for child in filter( lambda x: x.tag != etree.Comment, root ):
+    for child in [x for x in root if x.tag != etree.Comment]:
 
         if child.tag == "%ssetup"%namespace:
             number_of_setup_nodes += 1

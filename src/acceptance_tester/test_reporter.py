@@ -5,8 +5,8 @@ import os
 from optparse import OptionParser
 import datetime
 
-import framework.find_tests as find_tests
-import framework.rst_creator as rst_creator
+import acceptance_tester.framework.find_tests as find_tests
+import acceptance_tester.framework.rst_creator as rst_creator
 
 
 def create_report( test_folder, output_folder, start, delta ):
@@ -28,7 +28,7 @@ def create_report( test_folder, output_folder, start, delta ):
 
 def parse_datetimestr( string ):
 
-    print "Parsing date '%s'"%string
+    print("Parsing date '%s'"%string)
 
     spl = string.split( " " )
     year, month, day = spl[0].split( "-" )
@@ -40,7 +40,7 @@ def parse_datetimestr( string ):
     else:
         microsecond = "00"
 
-    vals = map( int, [year, month, day, hour, minute, second, microsecond] )
+    vals = list(map( int, [year, month, day, hour, minute, second, microsecond] ))
     return datetime.datetime( *vals )
 
 

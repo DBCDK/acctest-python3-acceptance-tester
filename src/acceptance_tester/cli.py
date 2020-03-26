@@ -82,13 +82,13 @@ from optparse import OptionParser
 import os
 
 import dbc_python.utils.basic_logger as basic_logger
-import framework.suite_tester as suite_tester
+from . import framework.suite_tester as suite_tester
 
 
 def parse_testfile_file( file ):
 
     fh = open( file )
-    content = map( lambda x: x.strip(), fh.readlines() )
+    content = [x.strip() for x in fh.readlines()]
     fh.close()
     return content
 
@@ -188,7 +188,7 @@ def cli():
                                console = False )
 
     test_targets = []
-    print "option", options.file
+    print("option", options.file)
     if options.file != None:
         test_targets += parse_testfile_file( os.path.abspath( options.file ) )
 

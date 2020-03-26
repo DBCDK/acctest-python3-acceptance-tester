@@ -5,7 +5,7 @@
 #import datetime
 import os.path
 import shutil
-import StringIO
+import io
 import sys
 import tempfile
 import unittest

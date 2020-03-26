@@ -26,13 +26,13 @@ import shutil
 import sys
 import zipfile
 from datetime import datetime
-import StringIO
+import io
 
 from lxml import etree
-from aux import delta_str
-from aux import datetime_str
-import job
-import find_tests
+from .aux import delta_str
+from .aux import datetime_str
+from . import job
+from . import find_tests
 sys.path.insert( 0, os.path.dirname( os.path.dirname( os.path.realpath( sys.argv[0] ) ) ) )
 import acceptance_tester.framework.rst_creator as rst_creator
 
@@ -152,7 +152,7 @@ class SuiteTester( object ):
         self.color = color
 
         self.report_file = os.path.abspath( report_file )
-        self.paths_to_tests = map( os.path.abspath, paths_to_tests )
+        self.paths_to_tests = list(map( os.path.abspath, paths_to_tests ))
 
         self.pool_size = self._validated_pool_size( pool_size )
         self.port_range = self._validated_port_range( port_range )
@@ -195,8 +195,7 @@ class SuiteTester( object ):
             self.tests.append( test_arguments )
 
         self.number_of_tests = len( self.tests )
-        self.number_of_testsuites = len( set( map( lambda x: x['test-suite'],
-                                                   self.tests ) ) )
+        self.number_of_testsuites = len( set( [x['test-suite'] for x in self.tests] ) )
         self.delimiter_length = 120
         ### Create status log message
         self._write_lines( self.__create_initialization_status_lines() )
@@ -307,9 +306,9 @@ class SuiteTester( object ):
                 parsed_results[result['test-suite']] = [ result ]
             else:
                 parsed_results[result['test-suite']].append( result )
-        for name, data in parsed_results.iteritems():
+        for name, data in parsed_results.items():
 
-            mod_name = filter( lambda x: x != '', name.split( os.sep ) )
+            mod_name = [x for x in name.split( os.sep ) if x != '']
             mod_name[-1] = mod_name[-1][:mod_name[-1].rfind( '.' )]
             fullname = ".".join( mod_name )
             self._create_folder( os.path.join( self.test_results_folder, "xUnit" ) )
@@ -324,7 +323,7 @@ class SuiteTester( object ):
             junit_xml = Junit_testsuite( fullname )
 
             for i, test in enumerate(data):
-                xml = etree.parse( StringIO.StringIO( test['xml'] ), parser )
+                xml = etree.parse( io.StringIO( test['xml'] ), parser )
                 def _retrieve_text( xpath ):
                     result = xml.xpath( xpath, namespaces=nsmap )
                     text = None
@@ -361,14 +360,14 @@ class SuiteTester( object ):
             fh.write( "%s\n"%lines )
             logger.info( lines )
             if self.verbose or force_print:
-                print lines
+                print(lines)
 
         else:
             for line in lines:
                 fh.write( "%s\n"%line )
                 logger.info( line )
                 if self.verbose or force_print:
-                    print line
+                    print(line)
         fh.close()
 
     ########################################################################################################################
@@ -391,9 +390,9 @@ class SuiteTester( object ):
             header.append( ( "resource manager", self.test_type['resource-manager'] ) )
         if 'xsd' in self.test_type:
             header.append( ( "xsd file", self.test_type['xsd'] ) )
-        offset = max( map( lambda x: len( x[0] ), header ) ) + 5
+        offset = max( [len( x[0] ) for x in header] ) + 5
         func_ppad = lambda s, l: s + ( "." * ( l - len( s ) ) )
-        header = map( lambda x: "%s %s"%( func_ppad( x[0] + ":", offset ), x[1] ), header )
+        header = ["%s %s"%( func_ppad( x[0] + ":", offset ), x[1] ) for x in header]
 
         header.insert( 0, "="*self.delimiter_length )
         header.insert( 1, "Acceptance-tester initialized:" )
@@ -417,8 +416,8 @@ class SuiteTester( object ):
                     "Ran %s tests found in %s testfiles."%( self.number_of_tests,
                                                             self.number_of_testsuites) ]
 
-        errors = sum( map( lambda x: x['status'] == "ERROR", results ) )
-        failures = sum( map( lambda x: x['status'] == "FAILURE", results ) )
+        errors = sum( [x['status'] == "ERROR" for x in results] )
+        failures = sum( [x['status'] == "FAILURE" for x in results] )
 
         prec = postc = ""
         if errors > 0:

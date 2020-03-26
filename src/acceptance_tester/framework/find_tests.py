@@ -23,7 +23,7 @@ import pkg_resources
 from lxml import etree
 from nose.tools import nottest
 
-import validate_testsuite
+from . import validate_testsuite
 from acceptance_tester.supported_test_types import TYPES as TYPES
 import acceptance_tester.framework.load_testrunner
 
@@ -64,7 +64,7 @@ def find_valid_tests( test_folders, testrunner_config ):
     if len( test_suites ) == 0:
         return (None, None, None )
 
-    test_type_name, test_type = _get_test_type( map( lambda x: x[1], test_suites ), testrunner_config )
+    test_type_name, test_type = _get_test_type( [x[1] for x in test_suites], testrunner_config )
 
     if not 'test-runner' in test_type:
         err_msg = "Type '%s' is missing a 'test-runner' entry."%test_type_name
@@ -92,7 +92,7 @@ def _find_testsuites( path ):
         for dir in dirs:
             if dir.startswith( '.' ):
                 dirs.remove( dir )
-        for f in filter( lambda x: x.endswith( '.xml' ), files ):
+        for f in [x for x in files if x.endswith( '.xml' )]:
             xml_files.append( os.path.abspath( os.path.join( root, f ) ) )
 
     test_suites = []
@@ -107,7 +107,7 @@ def _find_testsuites( path ):
         logger.warning( err_msg )
         return []
 
-    suitename_list = map( lambda x: x[0], test_suites )
+    suitename_list = [x[0] for x in test_suites]
     suitename_list.sort()
     logger.debug( "Found the following testsuite files:\n%s"%"\n".join( suitename_list ) )
     return test_suites
@@ -143,7 +143,7 @@ def _filter_non_valid_suites( test_suites, test_type ):
             return False
         return True
 
-    test_suites = filter(  lambda x: _validate( test_type_schema, x ), test_suites )
+    test_suites = [x for x in test_suites if _validate( test_type_schema, x )]
 
     if len( test_suites ) < 1:
         err_msg = "Found no valid testsuite files in path"
@@ -174,7 +174,7 @@ def _get_tests( test_suites ):
 
     namespace = "{info:testsuite#}"
     doc_names = ["description", "given", "then", "when"]
-    doc_names = map( lambda x: namespace + x, doc_names )
+    doc_names = [namespace + x for x in doc_names]
     tests = []
 
     ### These characters cannot be present in the name, as this
@@ -183,13 +183,13 @@ def _get_tests( test_suites ):
 
     for suite in test_suites:
         root = suite[1].getroot()
-        nodes = filter( lambda x: x.tag != etree.Comment, root )
-        test_nodes = filter( lambda x: x.tag == "%stest"%namespace, nodes )
+        nodes = [x for x in root if x.tag != etree.Comment]
+        test_nodes = [x for x in nodes if x.tag == "%stest"%namespace]
 
         #setup_node = filter( lambda x: x.tag == "%ssetup"%namespace, nodes )[0]
         #setup_str = etree.tostring( setup_nodes, pretty_print=True, encoding="UTF-8" )
 
-        setup_nodes = filter( lambda x: x.tag == "%ssetup"%namespace, nodes )
+        setup_nodes = [x for x in nodes if x.tag == "%ssetup"%namespace]
 
         setup_str = None
         if len( setup_nodes ) > 0:
@@ -201,8 +201,7 @@ def _get_tests( test_suites ):
             doc = {}
             for node in test:
                 if node.tag in doc_names:
-                    text = " ".join( map( lambda x: x.strip(),
-                                          filter( lambda x: x != '', node.text.split( "\n" ) ) ) )
+                    text = " ".join( [x.strip() for x in [x for x in node.text.split( "\n" ) if x != '']] )
                     doc[node.tag[len(namespace):]] = text
 
             banned = None
@@ -228,7 +227,7 @@ def _get_tests( test_suites ):
             tests.append( ( suite[0], test.get( "name" ), xml, doc ) )
 
     if len( tests ) < 1:
-        err_msg = "Found no tests in testsuite files '%s'"%map(lambda x: x[0], test_suites )
+        err_msg = "Found no tests in testsuite files '%s'"%[x[0] for x in test_suites]
         logger.error( err_msg )
         raise RuntimeError( err_msg )
     return tests

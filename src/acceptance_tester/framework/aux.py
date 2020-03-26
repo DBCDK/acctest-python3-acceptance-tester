@@ -39,18 +39,20 @@ def delta_str( delta ):
         Formatted string representation of delta
     """
     seconds = delta.seconds
+    logger.debug( "Seconds: %s", seconds )
     zlpad = lambda num, length: "0"*( length-len( str( num ) ) ) + str( num )
 
     tstr = "%s seconds"%seconds
-    minutes = seconds / 60
+
+    minutes = int(seconds / 60)
     if minutes > 0:
         seconds = seconds % 60
         tstr = "%s:%s minutes"%( minutes, zlpad( seconds, 2 ) )
-    hours = minutes / 60
+    hours = int(minutes / 60)
     if hours > 0:
         minutes = minutes % 60
         tstr = "%s:%s:%s hours"%( hours, zlpad( minutes, 2 ), zlpad( seconds, 2 ) )
-    #logger.debug( "Formatted value '%s' ==> '%s'"%( delta, tstr ) )
+    logger.debug( "Formatted value '%s' ==> '%s'", delta, tstr )
     return tstr
 
 
@@ -68,7 +70,7 @@ def format_description( string, length = 80, prefix = 'Description: ' ):
         strlen = length - len( prefix )
 
         result = []
-        string = " ".join( map( lambda x: x.strip(), filter( lambda x: x != '', string.split( "\n" ) ) ) )
+        string = " ".join( [x.strip() for x in [x for x in string.split( "\n" ) if x != '']] )
 
         first_time = True
         while( string != '' ):

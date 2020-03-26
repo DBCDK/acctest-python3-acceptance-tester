@@ -166,5 +166,5 @@ class TestSuiteTester( unittest.TestCase ):
         tr.parser_functions.update( {'{http://dbc.dk/xml/namespaces/solr}myfunc': myfunc} )
         tr.shutdown = Mock()
 
-        self.failUnlessRaises( RuntimeError, tr.parse, etree.fromstring( testsuite ) )
+        self.assertRaises( RuntimeError, tr.parse, etree.fromstring( testsuite ) )
         self.assertEqual( 1, tr.shutdown.call_count )

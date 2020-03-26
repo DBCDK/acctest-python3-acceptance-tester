@@ -30,9 +30,9 @@ from lxml import etree
 sys.path.insert( 0, os.path.split( os.path.dirname( os.path.realpath( sys.argv[0] ) ) )[0] )
 sys.path.insert( 0, os.path.dirname( os.path.dirname( os.path.dirname( os.path.dirname( os.path.realpath( sys.argv[0] ) ) ) ) ) )
 
-from aux import delta_str
-from aux import datetime_str
-from aux import format_description
+from .aux import delta_str
+from .aux import datetime_str
+from .aux import format_description
 
 
 class NullHandler( logging.Handler ):
@@ -189,11 +189,11 @@ def _format_traceback( exc_info, error ):
     import traceback
     exc_tb = traceback.extract_tb( exc_info[2] )
     tb = traceback.format_list( exc_tb )
-    tb = map( lambda x: [x], tb )
+    tb = [[x] for x in tb]
 
     formatted_traceback = []
     for entry in tb:
-        for fentry in filter( lambda x: x != '', entry[0].split( "\n" ) ):
+        for fentry in [x for x in entry[0].split( "\n" ) if x != '']:
             formatted_traceback.append( fentry )
 
     formatted_traceback.insert( 0, "Traceback (most recent call last):" )
@@ -207,7 +207,7 @@ def _remove_build_folder( folder ):
     try:
         shutil.rmtree( folder )
         removed = True
-    except OSError, e:
+    except OSError as e:
         logger.warning( "Unable to remove build folder: %s"%e )
         # Try again, then fail
         time.sleep( 1 )
@@ -339,7 +339,7 @@ def job( test ):
     if 'documentation' in test and 'description' in test['documentation']:
         try:
             desc = format_description( test['documentation']['description'] )
-        except Exception, err:
+        except Exception as err:
             exc_info = sys.exc_info()
             tb = _format_traceback( exc_info, err )
             testcase_runner.errors.append( tb )
@@ -360,7 +360,7 @@ def job( test ):
         testcase_runner.run_test( xml,
                                   test['build-folder'],
                                   test['resource-manager']  )
-    except Exception, err:
+    except Exception as err:
         exc_info = sys.exc_info()
         tb = _format_traceback( exc_info, err )
         testcase_runner.errors.append( tb )
@@ -388,7 +388,7 @@ def job( test ):
 
     if color:
         output = colorize( output )
-        summary = map( colorize, summary )
+        summary = list(map( colorize, summary ))
 
     _sync_stdout_write( output )
 
@@ -416,7 +416,7 @@ def colorize( string ):
                  'FAILED': [ colorama.Fore.YELLOW+colorama.Style.BRIGHT, colorama.Fore.RESET+colorama.Style.RESET_ALL ],
                  'SUCCESS': [ colorama.Fore.GREEN+colorama.Style.BRIGHT, colorama.Fore.RESET+colorama.Style.RESET_ALL ] }
 
-    for pattern, codes in patterns.iteritems():
+    for pattern, codes in patterns.items():
         string = string.replace( pattern, codes[0] + pattern + codes[1] )
 
     return string

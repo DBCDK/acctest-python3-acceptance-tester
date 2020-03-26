@@ -38,7 +38,7 @@ class TestLoadTestrunner( unittest.TestCase ):
     def test_validate_subclass_raises_if_subclass_does_not_inherit( self ):
         """ Test whether a NotImplementedError is raised if cls is not a subclass of expected_subcls.
         """
-        self.failUnlessRaises( NotImplementedError,
+        self.assertRaises( NotImplementedError,
                                lt._validate_subclass_type, TestLoadTestrunner, AbstractTestRunner )
 
     def test_load_testrunner_expected_testrunner_is_present_in_result( self ):
