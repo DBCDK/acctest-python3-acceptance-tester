@@ -82,7 +82,7 @@ from optparse import OptionParser
 import os
 
 import os_python.common.utils.basic_logger as basic_logger
-from . import framework.suite_tester as suite_tester
+import acceptance_tester.framework.suite_tester as suite_tester
 
 
 def parse_testfile_file( file ):
