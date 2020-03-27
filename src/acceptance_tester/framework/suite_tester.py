@@ -36,10 +36,9 @@ from . import find_tests
 sys.path.insert( 0, os.path.dirname( os.path.dirname( os.path.realpath( sys.argv[0] ) ) ) )
 import acceptance_tester.framework.rst_creator as rst_creator
 
-from dbc_python.utils.junit_testsuite import Junit_testsuite
 from acceptance_tester._version import __version__
-from dbc_python._version import __version__ as dbc_python__version__
 from os_python._version import __version__ as os_python__version__
+from os_python.common.utils.junit_testsuite import Junit_testsuite
 
 
 class NullHandler( logging.Handler ):
@@ -138,7 +137,6 @@ class SuiteTester( object ):
             If arguments are not good enough for starting test runner.
         """
         logger.debug( "acceptance-tester version: '%s'"%__version__ )
-        logger.debug( "dbc-python version: '%s'"%dbc_python__version__ )
         logger.debug( "os-python version: '%s'"%os_python__version__ )
         logger.info( "Initializing test environment." )
         self.start = datetime.now()

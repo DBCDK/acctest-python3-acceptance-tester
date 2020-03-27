@@ -81,7 +81,7 @@ from optparse import OptionParser
 
 import os
 
-import dbc_python.utils.basic_logger as basic_logger
+import os_python.common.utils.basic_logger as basic_logger
 from . import framework.suite_tester as suite_tester
 
 
