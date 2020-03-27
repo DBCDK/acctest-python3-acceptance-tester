@@ -1,0 +1,26 @@
+import os
+import sys
+
+sys.path.insert( 0, os.path.split( os.path.split( os.path.dirname( os.path.realpath( sys.argv[0] ) ) )[0] )[0] )
+import acceptance_tester.perform as pl
+
+
+if __name__ == '__main__':
+
+    from optparse import OptionParser
+
+    default_ofolder = os.path.join( os.getcwd(), "timings" )
+    default_logfile = "suite-test.log"
+
+    parser = OptionParser( usage="%prog [options]\n Creates timings in properties files. These can be picked up by the jenkins plot plugin" )
+
+    parser.add_option("--output-folder", type="string", action="store", dest="output_folder",
+                      default=default_ofolder,
+                      help="Folder to place generated properties in. Default is %s"%default_ofolder )
+
+    parser.add_option("--logfile", type="string", action="store", dest="logfile",
+                      default=default_logfile,
+                      help="Logfile to retrieve timings from. Default is '%s'"% default_logfile )
+    ( options, args ) = parser.parse_args()
+
+    pl.perform( options.logfile, options.output_folder )

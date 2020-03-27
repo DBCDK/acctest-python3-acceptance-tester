@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!-- 4 test examples -->
+  <!-- regression tests must conform to the regression-test.xsd -->
+  <!-- Paths to folder and files are relative to the scripts folder -->
+
+<testsuite xmlns="info:testsuite#">
+
+  <!-- Simple ingest test. -->
+  <!-- Ingests one object file into fedora, makes an oai-import into solr, -->
+  <!-- and search for all documents. One documents should be present. -->
+  <test name="Simple ingest test">
+    <ingest type="file">../../fedora-test-objects/example-objects/710100_27768210.xml</ingest>
+    <sleep>2</sleep>
+    <dataimport command="full-import"/>
+    <sleep>2</sleep>
+    <search search-string="*:*" expected="1"/>
+  </test>
+
+  <!-- Filter object test. -->
+  <!-- ingests all objects in the fedora-test-objects folder into fedora and -->
+  <!-- checks if 17 objects where ingested. Afterwards a full-import is -->
+  <!-- performed and a search for all documents, which should return 7 efter -->
+  <!-- the filtering of relation objects. all ids are checked to verify that -->
+  <!-- no relation objects are indexed. -->
+  <test name="Filter objects test">
+    <ingest type="folder" expected="17">../../fedora-test-objects/example-objects</ingest>
+    <purge>710100:27768210</purge> 
+    <dataimport command="full-import"/>
+    <sleep>2</sleep>
+    <search search-string="*:*" expected="7">
+      <id>775100:84813133</id>
+      <id>dbc:84809659</id>
+      <id>dbc:id93</id>
+      <id>775100:27773117</id>
+      <id>775100:84820849</id>
+      <id>dbc:27474659</id>
+      <id>dbc:87195023</id>
+    </search>
+  </test> 
+
+  <!-- Consecutive import test. -->
+  <!-- Ingests one file from fedora-test-objects, makes an oai-import into -->
+  <!-- solr, and search for all documents. One should be present. After -->
+  <!-- this another file is ingested into fedora, and imported into -->
+  <!-- solr. In the dataimport there are checks for total-rows-fetches, -->
+  <!-- total-documents-skipped and total-documents-processed. Lastly a -->
+  <!-- searches for all documents. Two should be present. --> 
+  <test name="Consecutive import test">
+    <ingest type="file">../../fedora-test-objects/example-objects/710100_27768210.xml</ingest>
+    <sleep>2</sleep>
+    <dataimport command="full-import" clean="true"/>
+    <search search-string="*:*" expected="1"/>
+    <ingest type="file">../../fedora-test-objects/example-objects/dbc_27474659.xml</ingest>
+    <sleep>2</sleep>
+    <dataimport command="full-import" clean="false"/>
+    <sleep>2</sleep>
+    <search search-string="*:*" expected="2" />
+  </test>
+
+  <!-- "objectXML authorization test. -->
+  <!-- Tries to access a ingested objects objectXML path. Fails if -->
+  <!-- Autorization is needed -->
+  <test name="objectXML authorization test">
+    <ingest type="file">../../fedora-test-objects/example-objects/710100_27768210.xml</ingest>
+    <authorized object="710100:27768210" path="objectXML" expected="permit"/>
+  </test>
+
+</testsuite>
+
