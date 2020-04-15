@@ -4,6 +4,8 @@
 
 The Acceptance-tester project is designed to run high-level
 acceptance-tests on apps and services.
+Based on https://svn.dbc.dk/repos/acceptance-tester
+
 
 When running stand alone the package-name is taken from the current directory name
 
@@ -37,3 +39,10 @@ The directory structure is:
   Where `.py` modules resides
    * test packages (named `tests`) are not included in the debian package
    * nosetest are run on the `tests` packages before the debian package is built
+
+
+## Acceptance testing
+Checkout code or install package
+Install one og more testrunner packages
+Get a testsuite with testcases and test data
+run bin/suite_test
