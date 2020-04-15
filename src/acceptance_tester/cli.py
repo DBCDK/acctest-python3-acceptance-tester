@@ -104,7 +104,7 @@ def cli():
     default_test_result_folder = 'test-results'
     default_report_file = 'test-report.txt'
     default_log_file = 'logs.zip'
-    default_pool_size = 8
+    default_pool_size = 1
     default_verbose = False
     default_use_preloaded_resources = False
 
@@ -188,8 +188,8 @@ def cli():
                                console = False )
 
     test_targets = []
-    print("option", options.file)
     if options.file != None:
+        print("Additional options from: ", options.file)
         test_targets += parse_testfile_file( os.path.abspath( options.file ) )
 
     test_targets += args

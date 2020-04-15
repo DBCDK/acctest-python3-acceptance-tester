@@ -321,7 +321,7 @@ class SuiteTester( object ):
             junit_xml = Junit_testsuite( fullname )
 
             for i, test in enumerate(data):
-                xml = etree.parse( io.StringIO( test['xml'] ), parser )
+                xml = etree.parse( io.BytesIO( test['xml'] ), parser )
                 def _retrieve_text( xpath ):
                     result = xml.xpath( xpath, namespaces=nsmap )
                     text = None

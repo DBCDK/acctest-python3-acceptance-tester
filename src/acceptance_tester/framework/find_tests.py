@@ -187,14 +187,14 @@ def _get_tests( test_suites ):
         test_nodes = [x for x in nodes if x.tag == "%stest"%namespace]
 
         #setup_node = filter( lambda x: x.tag == "%ssetup"%namespace, nodes )[0]
-        #setup_str = etree.tostring( setup_nodes, pretty_print=True, encoding="UTF-8" )
+        #setup_str = etree.tostring( setup_nodes, pretty_print=True, encoding="unicode" )
 
         setup_nodes = [x for x in nodes if x.tag == "%ssetup"%namespace]
 
         setup_str = None
         if len( setup_nodes ) > 0:
 
-            setup_str = etree.tostring( setup_nodes[0], pretty_print=True, encoding="UTF-8" )
+            setup_str = etree.tostring( setup_nodes[0], pretty_print=True, encoding="unicode" )
 
         for test in test_nodes:
 
@@ -217,7 +217,7 @@ def _get_tests( test_suites ):
                 raise RuntimeError( err_msg )
 
 
-            test_str = etree.tostring( test, pretty_print=True, encoding="UTF-8" )
+            test_str = etree.tostring( test, pretty_print=True, encoding="unicode" )
 
             xml = "".join( [ "<wrapping name=\"%s\">" % test.get( "name" ), test_str, "</wrapping>" ] )
             if setup_str:

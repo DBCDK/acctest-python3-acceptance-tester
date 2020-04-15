@@ -117,7 +117,7 @@ def _create_rst( test, parser, nsmap ):
     :type nsmap:
         dict.
     """
-    xml = etree.parse( io.StringIO( test['xml'] ), parser )
+    xml = etree.parse( io.BytesIO( test['xml'] ), parser )
 
     def _retrieve_text( xpath ):
         result = xml.xpath( xpath, namespaces=nsmap )
