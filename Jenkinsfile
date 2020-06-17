@@ -1,10 +1,10 @@
 #! groovy
-@Library('microsearch')_
+// @Library('microsearch')_
 
 // This has to be declared outside the pipeline since variables
 // declared in 'environment' cannot be used by 'agent'.
 // See: https://issues.jenkins-ci.org/browse/JENKINS-43911
-def python3ImageVersion = findLastSuccessfulBuildNumber('Docker-base-debian-python3/job/master')
+// def python3ImageVersion = findLastSuccessfulBuildNumber('Docker-base-debian-python3/job/master')
 
 def ownerEmail = "os-team@dbc.dk"
 def ownerSlack = "search"
@@ -23,10 +23,11 @@ properties([
 
 pipeline {
     agent {
-        docker {
+        dockerfile {
             label 'devel10'
-            image "docker.dbc.dk/dbc-debian-python3:${python3ImageVersion}"
-            args '-u 0:0'
+            filename 'Dockerfile.build-env'
+            additionalBuildArgs '--pull'
+            reuseNode true
         }
     }
     options {
@@ -49,7 +50,6 @@ pipeline {
                 }
                 script {
                     sh " rm -rf copyright.txt deb_dist/ dist/ *.tar.gz *.egg-info "
-                    sh " apt-install python3-os-dbc "
                     sh " python3 setup.py nosetests --with-xunit "
                     sh " python3 setup.py --no-user-cfg --command-packages=stdeb.command sdist_dsc --debian-version=${env.BUILD_NUMBER} --verbose --copyright-file copyright.txt -z stable "
                     sh '''
