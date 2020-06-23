@@ -247,7 +247,7 @@ def clone_git(path, git_url, checkout_path, clean=False):
         out, err = result.communicate()
 
         if result.returncode != 0:
-            raise RuntimeError("git clone failed: %s" % out + err)
+            raise RuntimeError("git clone failed: %s %s" (out,  err))
     finally:
         os.chdir(cwd)
 
