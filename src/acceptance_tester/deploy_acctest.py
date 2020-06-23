@@ -181,7 +181,8 @@ def create_hive_corepo_test_home(path, repository, clean):
 
     config_script = os.path.join(path, 'hive.ini')
     create_ini_file(config_script, {'hive': os.path.join(path, 'hive/app/target/hive-0.1-SNAPSHOT.jar'),
-                                    'hive-deploy': os.path.join(path, 'hive/deploy/target/hive-deploy-0.1-SNAPSHOT.jar')})
+                                    'hive-deploy': os.path.join(path, 'hive/deploy/target/hive-deploy-0.1-SNAPSHOT.jar'),
+                                    'local_javascript': os.path.join(path, 'hive/app/src/main/resources/javascript')})
     create_java_project_scripts(path, build_dir, config_script, repository, 'hive')
 
 
