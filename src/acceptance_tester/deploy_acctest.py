@@ -216,7 +216,7 @@ def checkout_svn(path, svn_url, checkout_path, clean=False):
     logger.info("Checking out '%s'" % svn_url)
     cmd = "svn co %s %s" % (svn_url, checkout_path)
     logger.debug("svn cmd: %s" % cmd)
-    result = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    result = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
     out, err = result.communicate()
 
     if result.returncode != 0:
@@ -243,11 +243,11 @@ def clone_git(path, git_url, checkout_path, clean=False):
         cmd = "git clone %s %s" % (git_url, checkout_path)
         logger.debug("git cmd: %s" % cmd)
 
-        result = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        result = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
         out, err = result.communicate()
 
         if result.returncode != 0:
-            raise RuntimeError("git clone failed: %s" % str(out) + str(err))
+            raise RuntimeError("git clone failed: %s" % out + err)
     finally:
         os.chdir(cwd)
 
