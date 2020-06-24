@@ -98,7 +98,7 @@ def validate_testsuite_file( file ):
         fh = open( file, "rb" )
         content = fh.read()
         fh.close()
-        logger.debug( "Content: %s", content )
+        #logger.debug( "Content: %s", content )
 
         xml = etree.parse( io.BytesIO( content ), parser )
 
