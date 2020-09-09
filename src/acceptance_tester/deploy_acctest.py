@@ -53,7 +53,9 @@ def create_test_environment(path, repository, clean=False, module=None):
     logger.debug("repository:%s, clean:%s, module:%s " %(repository, clean, module))
 
     home = create_dir(path)
-        
+
+    create_README(os.path.join(path, "README"))
+
     for name, func in test_types().items():
         logger.debug("Name: %s" % name)
         if module is None or name in module:
@@ -63,9 +65,6 @@ def create_test_environment(path, repository, clean=False, module=None):
             func(test_dir, repository, clean)
         else:
             logger.info("Skipping %s" % name)
-
-
-    create_README(os.path.join(path, "README"))
 
 
 def create_addi_corepo_test_home(path, repository, clean):
@@ -196,7 +195,11 @@ def create_README(path):
         fh.write("Each project contains the acceptance-tests for the relevant\n")
         fh.write("test-type, and a SVN checkout of the code under test.\n")
         fh.write("Each test-type folder contains a suite_runner script an initialization\n")
-        fh.write("script, and a script for running javascript unitests.\n\n")
+        fh.write("script, and a script for running all javascript unitests.\n\n")
+        fh.write("A jsshell is available for running the interactive JS shell.\n")
+        fh.write("It can also be used to run Unit test for a single test module.\n")
+        fh.write("E.g:\n")
+        fh.write("jsshell <path of Javascript unit module>.test.js.\n\n")
         fh.write("The source-code in the test-folders are checked out with svn, so\n")
         fh.write("it is easy to commit changes. REMEMBER TO UPDATE when starting\n")
         fh.write("development to avoid merge-conflicts etc., or run the initialize_java\n")
