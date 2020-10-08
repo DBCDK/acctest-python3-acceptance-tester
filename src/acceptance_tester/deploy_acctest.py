@@ -8,11 +8,9 @@ Deploys acceptance tester development environment.
 Each produced environment contains the following specialized test environments:
 
 1. addi
-2. convert
-3. hive
-4. holdings
-5. rawrepo-oai
-6. solr
+2. hive
+3. rawrepo-oai
+4. solr
 
 Each of these directorys contains svn checkouts of the relevant
 code and testfiles so commits and the like can be done from the
@@ -41,7 +39,6 @@ def test_types():
             'hive': create_hive_corepo_test_home,
             'addi': create_addi_corepo_test_home,
             'solr': create_corepo_solr_test_home,
-            'convert': create_convert_test_home,
             'rawrepo-oai': create_rawrepo_oai_test_home
             }
 
@@ -83,60 +80,6 @@ def create_addi_corepo_test_home(path, repository, clean):
     create_javascript_suite_runner(path, 'addi-service')
     create_initialize_script(path, 'addi-service')
     create_jsshell(path, 'addi-service/webapp')
-
-def create_convert_test_home(path, repository, clean):
-    """
-    Creates convert test home at path
-    """
-    checkout_svn(path, get_svn_url("datawell-convert-acctest/trunk"), "acceptance-tests", clean)
-    build_dir = create_dir(os.path.join(path, 'build-folder'))
-    checkout_svn(path, get_svn_url("datawell-convert/trunk"), "datawell-convert", clean)
-
-    config_script = os.path.join(path, 'datawell-convert.ini')
-    create_ini_file(config_script, {'datawell-convert': os.path.join(path, 'datawell-convert-trunk.tgz')})
-
-    name = 'suite_runner_c' #will usejsinputtool
-    filepath = os.path.join(path, name)
-    with open(filepath, 'w') as fh:
-        write_arg_parser(fh, path, name)
-        fh.write("tar -h --xform s/datawell-convert/datawell-convert-trunk/ "
-            "--exclude='.svn' --exclude '.log' -cvzf "
-            "datawell-convert-trunk.tgz datawell-convert\n")
-
-        fh.write('suite_test --verbose --color --build-folder %s --pool-size 1 --use-configured-resources %s $ARGS\n' % (build_dir, config_script))
-
-    os.chmod(filepath, 0o775)
-
-    name = 'suite_runner' #will use jspipetool
-    extraOptions = [("-f", "--force-download", "Downloads latest build of jspipetool", "DOWNLOAD_JSPIPETOOL")]
-    filepath = os.path.join(path, name)
-    with open(filepath, 'w') as fh:
-        write_arg_parser(fh, path, name, extraOptions)
-
-        fh.write("JSPIPETOOL_FILE=jspipetool-jar-with-dependencies.jar\n")
-
-        fh.write('if [ ! -f "datawell-convert/jar/$JSPIPETOOL_FILE" ]; then\n')
-        fh.write("   DOWNLOAD_JSPIPETOOL=TRUE\n")
-        fh.write("fi\n")
-
-        fh.write("if [ $DOWNLOAD_JSPIPETOOL ]; then\n")
-        fh.write('   echo "Downloading jspipetool"\n')
-        fh.write("   mkdir datawell-convert/jar\n")
-        fh.write("   cd datawell-convert/jar\n")
-        fh.write("   rm $JSPIPETOOL_FILE\n")
-        fh.write("   wget http://is.dbc.dk/job/jspipetool/lastSuccessfulBuild/artifact/application/target/$JSPIPETOOL_FILE\n")
-        fh.write("   cd -\n")
-        fh.write("fi\n")
-
-        fh.write("tar -h --xform s/datawell-convert/datawell-convert-trunk/ "
-            "--exclude='.svn' --exclude '.log' -cvzf "
-            "datawell-convert-trunk.tgz datawell-convert\n")
-
-
-        fh.write('suite_test --verbose --color --build-folder %s --pool-size 1 --testrunner-config java --use-configured-resources %s $ARGS\n' % (build_dir, config_script))
-        
-    os.chmod(filepath, 0o775)
-
 
 def create_rawrepo_oai_test_home(path, repository, clean):
     """
