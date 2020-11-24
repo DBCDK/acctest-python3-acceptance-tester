@@ -87,7 +87,7 @@ def create_rawrepo_oai_test_home(path, repository, clean):
     """
     clone_git(path, get_git_url('rr-oai'), "rr-oai", clean)
     create_javascript_suite_runner(path, 'rr-oai/formatter-js', 'rr-oai/setmatcher')
-    create_initialize_script(path, 'rr-oai/formatter-js', 'rr-oai/setmatcher', update_suite=None, version_control="git pull")
+    create_initialize_script(path, 'rr-oai', update_suite=None, version_control="git pull")
 
 def create_corepo_solr_test_home(path, repository, clean):
     """
