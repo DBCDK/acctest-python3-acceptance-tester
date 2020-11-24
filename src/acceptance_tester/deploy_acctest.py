@@ -39,7 +39,7 @@ def test_types():
             'hive': create_hive_corepo_test_home,
             'addi': create_addi_corepo_test_home,
             'solr': create_corepo_solr_test_home,
-            'rawrepo-oai': create_rawrepo_oai_test_home
+            'rr-oai': create_rawrepo_oai_test_home
             }
 
 
@@ -85,9 +85,9 @@ def create_rawrepo_oai_test_home(path, repository, clean):
     """
     Creates rawrepo-oai test home at path
     """
-    clone_git(path, get_git_url('rawrepo-oai'), "rawrepo-oai", clean)
-    create_javascript_suite_runner(path, 'rawrepo-oai/formatter', 'rawrepo-oai/setmatcher')
-    create_initialize_script(path, 'rawrepo-oai/formatter', 'rawrepo-oai/setmatcher', update_suite=None)
+    clone_git(path, get_git_url('rr-oai'), "rr-oai", clean)
+    create_javascript_suite_runner(path, 'rr-oai/formatter-js', 'rr-oai/setmatcher')
+    create_initialize_script(path, 'rr-oai/formatter-js', 'rr-oai/setmatcher', update_suite=None, version_control="git pull")
 
 def create_corepo_solr_test_home(path, repository, clean):
     """
@@ -256,7 +256,7 @@ def create_mvn_suite_runner(home_dir, build_dir, config_script, repository, *mvn
     os.chmod(path, 0o775)
 
 
-def create_initialize_script(home_dir, *mvn_folders, update_suite="acceptance-tests"):
+def create_initialize_script(home_dir, *mvn_folders, update_suite="acceptance-tests", version_control="svn up"):
     """ Creates init script that svn updates the source code and clean builds it
     """
     logger.info("Create initialize_java script")
@@ -271,12 +271,12 @@ def create_initialize_script(home_dir, *mvn_folders, update_suite="acceptance-te
         # Update acceptance test suite
         if update_suite is not None:
             fh.write('cd %s\n' %update_suite)
-            fh.write('svn up\n')
+            fh.write('%s\n'%version_control)
             fh.write('cd -\n')
 
         for folder in mvn_folders:
             fh.write('cd %s\n' % folder)
-            fh.write('svn up\n')
+            fh.write('%s\n'%version_control)
             fh.write('mvn clean install -DskipITs\n')
             fh.write('cd -\n')
 
