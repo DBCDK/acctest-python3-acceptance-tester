@@ -76,8 +76,14 @@ def create_addi_corepo_test_home(path, repository, clean):
     create_ini_file(config_script, {'addi-service': os.path.join(path, 'addi-service/webapp/target/addi-service.war'),
                                     'addi-service-deploy': os.path.join(path, 'addi-service/deploy/target/addi-service-deploy-0.1.0-SNAPSHOT.jar')})
 
-    create_java_project_scripts(path, build_dir, config_script, repository, 'addi-service')
+    #create_java_project_scripts(path, build_dir, config_script, repository, 'addi-service')
+    create_addi_suite_runner(path, build_dir, config_script, repository)
     create_javascript_suite_runner(path, 'addi-service')
+    create_initialize_script(path, 'addi-service')
+
+    create_javascript_suite_runner(path, 'addi-service')
+
+
     create_initialize_script(path, 'addi-service')
     create_jsshell(path, 'addi-service/webapp')
 
@@ -249,6 +255,31 @@ def create_mvn_suite_runner(home_dir, build_dir, config_script, repository, *mvn
             fh.write('cd %s\n' % folder)
             fh.write('mvn package\n')
             fh.write('cd -\n')
+        fh.write('fi\n')
+
+        fh.write('suite_test --testrunner-config %s --verbose --color --build-folder %s --pool-size 1 --use-configured-resources %s $ARGS\n' % (repository, build_dir, config_script))
+
+    os.chmod(path, 0o775)
+
+
+def create_addi_suite_runner(home_dir, build_dir, config_script, repository):
+    """ Creates suite_runner script for mvn test projects
+    """
+    logger.info("Create suite_runner script")
+    name = 'suite_runner'
+    path = os.path.join(home_dir, name)
+
+    with open(path, 'w') as fh:
+        write_arg_parser(fh, home_dir, name)
+
+        fh.write('if [ $NO_BUILD ]; then\n')
+        fh.write('    echo Skipping source code build\n')
+        fh.write('else\n')
+        fh.write('    echo Building source code\n')
+
+        fh.write('cd addi-service\n')
+        fh.write('scripts/build\n')
+        fh.write('cd -\n')
         fh.write('fi\n')
 
         fh.write('suite_test --testrunner-config %s --verbose --color --build-folder %s --pool-size 1 --use-configured-resources %s $ARGS\n' % (repository, build_dir, config_script))
