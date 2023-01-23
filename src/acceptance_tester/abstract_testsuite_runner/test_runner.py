@@ -211,7 +211,7 @@ class TestRunner( object ):
     def shutdown( self ):
         """ Runs all functions added to 'self.shutdown_hooks'
         """
-        for hook in reversed( self.shutdown_hooks ):
+        for hook in self.shutdown_hooks:
             args = ()
             if len( hook ) > 1:
                 args = tuple( hook[1:] )
