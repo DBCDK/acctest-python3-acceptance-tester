@@ -70,15 +70,11 @@ def create_addi_corepo_test_home(path, repository, clean):
     """
     checkout_svn(path, get_svn_url("addi-corepo-acctest/trunk"), "acceptance-tests", clean)
     build_dir = create_dir(os.path.join(path, 'build-folder'))
-    checkout_svn(path, get_svn_url("addi-service/trunk"), "addi-service", clean)
 
     config_script = os.path.join(path, 'addi.ini')
-    create_ini_file(config_script, {'javascript': os.path.join(path, 'addi-service/webapp/src/main/resources/javascript'),
-                                    'loglevel': 'TRACE'})
+    create_ini_file(config_script, {'loglevel': 'TRACE'})
 
-    #create_java_project_scripts(path, build_dir, config_script, repository, 'addi-service')
-
-    create_mvn_suite_runner(path, build_dir, config_script, repository, 'addi-service/webapp')
+    create_java_project_scripts(path, build_dir, config_script, repository)
 
     create_javascript_suite_runner(path, 'addi-service')
     create_initialize_script(path, 'addi-service')
@@ -124,12 +120,10 @@ def create_hive_corepo_test_home(path, repository, clean):
     checkout_svn(path, get_svn_url("hive-corepo-acctest/trunk"), "acceptance-tests", clean)
     build_dir = create_dir(os.path.join(path, 'build-folder'))
 
-    checkout_svn(path, get_svn_url("hive/trunk"), "hive", clean)
-
     config_script = os.path.join(path, 'hive.ini')
     create_ini_file(config_script, {'hive': os.path.join(path, 'hive/app/target/hive-0.1-SNAPSHOT.jar'),
                                     'hive-deploy': os.path.join(path, 'hive/deploy/target/hive-deploy-0.1-SNAPSHOT.jar')})
-    create_java_project_scripts(path, build_dir, config_script, repository, 'hive')
+    create_java_project_scripts(path, build_dir, config_script, repository)
     create_jsshell(path, 'hive/app')
 
 
