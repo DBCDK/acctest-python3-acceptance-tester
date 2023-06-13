@@ -102,10 +102,9 @@ def create_corepo_solr_test_home(path, repository, clean):
 
     config_script = os.path.join(path, 'corepo-solr.ini')
     create_ini_file(config_script, {'solr-config': os.path.join(path, 'corepo-indexer/solr/target/corepo-indexer-solr-1.1-SNAPSHOT.zip'),
-                                    'javascript': os.path.join(path, 'corepo-indexer/worker/src/main/resources/javascript'),
                                     'loglevel': 'TRACE'})
 
-    create_mvn_suite_runner(path, build_dir, config_script, repository, 'corepo-indexer/worker', "corepo-indexer/solr")
+    create_mvn_suite_runner(path, build_dir, config_script, repository, "corepo-indexer/solr")
 
     create_javascript_suite_runner(path, 'corepo-indexer/worker')
     create_initialize_script(path, 'corepo-indexer')
