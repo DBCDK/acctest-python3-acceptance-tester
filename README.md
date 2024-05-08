@@ -1,5 +1,7 @@
 # acctest-python3-acceptance-tester
 
+Archived 08/05-2025, Not used by DBC any more
+
 ## Acceptance Testere for Search componenter
 
 The Acceptance-tester project is designed to run high-level
